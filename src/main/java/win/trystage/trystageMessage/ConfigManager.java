@@ -72,7 +72,7 @@ public class ConfigManager {
         map.put("cooldown-seconds", 3);
 
         // ---- 广告词列表 ----
-        map.put("advert-words", Arrays.asList("buy", "rank", "discount", "shop", "store", "purchase"));
+        map.put("advert-words", Arrays.asList(".", ",", "，", "。"));
 
         // ---- 广告拦截 ----
         map.put("advert-message",
@@ -99,14 +99,14 @@ public class ConfigManager {
         Map<String, Object> adult = new LinkedHashMap<>();
         adult.put("type", "adult");
         adult.put("words", Arrays.asList("hentai", "变态"));
-        adult.put("reason", "it contains inappropriate content with adult themes.");
+        adult.put("reason", "it contains inappropriate content with adult themes");
         sensitiveList.add(adult);
 
         // 条目2: 暴力/仇恨
         Map<String, Object> violence = new LinkedHashMap<>();
         violence.put("type", "violence");
         violence.put("words", Arrays.asList("nmsl", "cnm"));
-        violence.put("reason", "it involves encouraging violence or hatred towards other players.");
+        violence.put("reason", "it involves encouraging violence or hatred towards other players");
         sensitiveList.add(violence);
 
         map.put("sensitive", sensitiveList);
@@ -179,7 +179,7 @@ public class ConfigManager {
     }
 
     public String getCooldownMessage(String player, String message) {
-        return replace(getCooldownMessageRaw(), player, message, null, null);
+        return replace(getCooldownMessageRaw(), player, message, null, null).replace("{sec}",String.valueOf(getCooldownSeconds()));
     }
 
     public String getSensitiveMessage(String player, String message, String type, String reason) {

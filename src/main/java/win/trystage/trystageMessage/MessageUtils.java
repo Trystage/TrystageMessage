@@ -12,30 +12,20 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MessageUtils {
 
     private final ConfigManager config;
+    private final PermissionChecker permissionChecker;
 
-    // 缓存玩家最后发言时间（毫秒）
     private final Map<UUID, Long> lastMessageTime = new ConcurrentHashMap<>();
-    // 缓存玩家最后一条消息内容
     private final Map<UUID, String> lastMessageContent = new ConcurrentHashMap<>();
 
-    public MessageUtils(ConfigManager config) {
+    public MessageUtils(ConfigManager config, PermissionChecker permissionChecker) {
         this.config = config;
+        this.permissionChecker = permissionChecker;
     }
 
-    /**
-     * 检查玩家消息是否违规。
-     * 若通过检查，返回 null 并自动更新该玩家的时间戳和最后消息。
-     * 若违规，返回对应的拦截消息（已替换占位符），且不更新记录。
-     *
-     * @param playerId   玩家 UUID
-     * @param playerName 玩家名称（用于占位符替换）
-     * @param message    消息内容
-     * @return 违规消息（含颜色代码）或 null
-     */
     public String checkMessage(UUID playerId, String playerName, String message) {
-        // 1. 冷却检查
+        // 1. 冷却检查（如果有 bypass 权限则跳过）
         int cooldown = config.getCooldownSeconds();
-        if (cooldown > 0) {
+        if (cooldown > 0 && !permissionChecker.hasPermission(playerId, "tmsg.bypass.cooldown")) {
             Long lastTime = lastMessageTime.get(playerId);
             if (lastTime != null) {
                 long now = System.currentTimeMillis();

@@ -1,4 +1,4 @@
 name: TrystageMessage
-main: win.trystage.trystageMessage.bungee.TrystageMessageBungee
+main: win.trystage.trystageMessage.TrystageMessageBungee
 version: 1.0
 author: TrystageBedwars

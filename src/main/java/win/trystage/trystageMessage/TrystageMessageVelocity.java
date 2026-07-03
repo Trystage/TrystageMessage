@@ -10,11 +10,13 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.Component;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
+import java.util.Optional;
 
 @Plugin(
         id = "trystagemessage",
@@ -46,7 +48,11 @@ public class TrystageMessageVelocity {
         logger.info("Config loaded.");
 
         // 初始化消息工具
-        messageUtils = new MessageUtils(configManager);
+        PermissionChecker checker = (uuid, perm) -> {
+            Optional<Player> opt = proxyServer.getPlayer(uuid);
+            return opt.map(p -> p.hasPermission(perm)).orElse(false);
+        };
+        messageUtils = new MessageUtils(configManager, checker);
         logger.info("messageUtils initialized.");
 
         // 注册重载指令

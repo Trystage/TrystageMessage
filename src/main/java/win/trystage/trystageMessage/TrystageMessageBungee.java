@@ -22,7 +22,11 @@ public class TrystageMessageBungee extends Plugin implements Listener {
         // 配置文件路径（Bungee的data文件夹）
         Path dataDir = getDataFolder().toPath();
         configManager = new ConfigManager(dataDir);
-        messageUtils = new MessageUtils(configManager);
+        PermissionChecker checker = (uuid, perm) -> {
+            ProxiedPlayer player = getProxy().getPlayer(uuid);
+            return player != null && player.hasPermission(perm);
+        };
+        messageUtils = new MessageUtils(configManager, checker);
 
         // 注册指令
         getProxy().getPluginManager().registerCommand(this, new ReloadCommand());

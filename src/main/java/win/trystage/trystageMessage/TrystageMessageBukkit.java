@@ -1,5 +1,6 @@
 package win.trystage.trystageMessage;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -21,7 +22,11 @@ public class TrystageMessageBukkit extends JavaPlugin implements Listener {
     public void onEnable() {
         Path dataDir = getDataFolder().toPath();
         configManager = new ConfigManager(dataDir);
-        messageUtils = new MessageUtils(configManager);
+        PermissionChecker checker = (uuid, perm) -> {
+            Player player = Bukkit.getPlayer(uuid);
+            return player != null && player.hasPermission(perm);
+        };
+        messageUtils = new MessageUtils(configManager, checker);
 
         // 注册指令
         getCommand("tmsg").setExecutor(this::onCommand);
