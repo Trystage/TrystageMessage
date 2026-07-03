@@ -1,0 +1,12 @@
+name: TrystageMessage
+main: win.trystage.trystageMessage.TrystageMessageBukkit
+version: 1.0
+api-version: 1.13
+author: TrystageBedwars
+commands:
+  tmsg:
+    permission: tmsg.reload
+    usage: /tmsg reload
+permissions:
+  tmsg.reload:
+    default: op
