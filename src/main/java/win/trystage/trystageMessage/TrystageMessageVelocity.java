@@ -72,7 +72,7 @@ public class TrystageMessageVelocity {
         );
         logger.info("Registered /tmsg reload command.");
 
-        logger.info("TrystageMessageVelocity plugin enabled.");
+        logger.info("TrystageMessage plugin enabled.");
     }
 
     /**

@@ -34,7 +34,7 @@ public class TrystageMessageBungee extends Plugin implements Listener {
         // 注册事件监听
         getProxy().getPluginManager().registerListener(this, this);
 
-        getLogger().info("TrystageMessageVelocity enabled.");
+        getLogger().info("TrystageMessage enabled.");
     }
 
     @Override
@@ -42,7 +42,7 @@ public class TrystageMessageBungee extends Plugin implements Listener {
         if (messageUtils != null) {
             messageUtils.clearAll();
         }
-        getLogger().info("TrystageMessageVelocity disabled.");
+        getLogger().info("TrystageMessage disabled.");
     }
 
     @EventHandler

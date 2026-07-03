@@ -34,7 +34,7 @@ public class TrystageMessageBukkit extends JavaPlugin implements Listener {
         // 注册事件
         getServer().getPluginManager().registerEvents(this, this);
 
-        getLogger().info("TrystageMessageVelocity enabled.");
+        getLogger().info("TrystageMessage enabled.");
     }
 
     @Override
@@ -42,7 +42,7 @@ public class TrystageMessageBukkit extends JavaPlugin implements Listener {
         if (messageUtils != null) {
             messageUtils.clearAll();
         }
-        getLogger().info("TrystageMessageVelocity disabled.");
+        getLogger().info("TrystageMessage disabled.");
     }
 
     // 指令处理
