@@ -24,7 +24,7 @@ jobs:
           export UPDATE_VERSION=$(cat version.txt)
           mvn versions:set -DnewVersion=$UPDATE_VERSION
           mvn versions:update-child-modules
-          mvn clean package -s ci_settings.xml
+          mvn clean package
           echo "UPDATE_VERSION=$UPDATE_VERSION" >> $GITHUB_ENV
 
       - name: Upload JAR to FTP
