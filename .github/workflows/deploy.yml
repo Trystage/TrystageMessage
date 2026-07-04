@@ -1,0 +1,48 @@
+name: Deploy with Maven
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'adopt'
+
+      - name: Package with Maven
+        run: |
+          sudo apt install jq -y
+          export UPDATE_VERSION=$(cat version.txt)
+          mvn versions:set -DnewVersion=$UPDATE_VERSION
+          mvn versions:update-child-modules
+          mvn clean package -s ci_settings.xml
+          echo "UPDATE_VERSION=$UPDATE_VERSION" >> $GITHUB_ENV
+
+      - name: Upload JAR to FTP
+        uses: modern-dev/ftp-mirror@v2
+        with:
+          exclude: classes generated-sources maven-archiver maven-status
+          server: ${{ secrets.FTP_SERVER }}
+          user: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local_dir: target/
+          remote_dir: 4C01/TrystageMessage
+
+      - name: Create Tag
+        uses: softprops/action-gh-release@v1
+        with:
+          files: target/TrystageMessage-${{env.UPDATE_VERSION}}.jar
+          generate_release_notes: true
+          name: ${{env.UPDATE_VERSION}}
+          tag_name: ${{env.UPDATE_VERSION}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
