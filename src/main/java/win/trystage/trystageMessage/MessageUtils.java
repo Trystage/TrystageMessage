@@ -42,6 +42,27 @@ public class MessageUtils {
         }
 
         // 3. 广告词检查
+        // ---- 长度限制（反广告/刷屏） ----
+        int length = message.length();
+        if (length > 200) {
+            return config.getAdvertMessage(playerName, message);
+        }
+        if (length > 50) {
+            int cjkCount = 0;   // 中日韩字符
+            int wideCount = 0;  // 其他非ASCII字符（俄语、法语、西语等）
+            for (char c : message.toCharArray()) {
+                if (c >= 0x4E00 && c <= 0x9FA5) {
+                    cjkCount++;
+                } else if (c > 255) {
+                    wideCount++;
+                }
+            }
+            // CJK超过50 或 其他宽字符超过150 则拦截
+            if (cjkCount > 50 || wideCount > 150) {
+                return config.getAdvertMessage(playerName, message);
+            }
+        }
+
         for (String word : config.getAdvertWords()) {
             if (message.toLowerCase().contains(word.toLowerCase())) {
                 return config.getAdvertMessage(playerName, message);
