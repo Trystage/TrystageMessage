@@ -1,12 +1,15 @@
 package win.trystage.trystageMessage;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -57,8 +60,7 @@ public class TrystageMessageBukkit extends JavaPlugin implements Listener {
         return true;
     }
 
-    // 异步聊天事件（Bukkit/Spigot/Paper均支持）
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         String playerName = player.getName();
@@ -70,6 +72,18 @@ public class TrystageMessageBukkit extends JavaPlugin implements Listener {
             event.setCancelled(true);
             player.sendMessage(result.replace('&', '§'));
             getLogger().info("Blocked message from " + playerName + ": " + message);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onCommand(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+        String fullCommand = event.getMessage(); // 完整命令（含 /）
+
+        String result = messageUtils.checkMessage(player.getUniqueId(), player.getName(), fullCommand);
+        if (result != null) {
+            event.setCancelled(true);
+            player.sendMessage(Component.text(result.replace('&', '§')).content());
         }
     }
 

@@ -1,5 +1,6 @@
 package win.trystage.trystageMessage;
 
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
@@ -8,6 +9,8 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
+import org.bukkit.entity.Player;
 
 import java.nio.file.Path;
 import java.util.UUID;
@@ -45,7 +48,7 @@ public class TrystageMessageBungee extends Plugin implements Listener {
         getLogger().info("TrystageMessage disabled.");
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerChat(ChatEvent event) {
         if (event.isCommand()) return; // 只处理聊天消息
         if (!(event.getSender() instanceof ProxiedPlayer)) return;
@@ -67,6 +70,26 @@ public class TrystageMessageBungee extends Plugin implements Listener {
     public void onPlayerDisconnect(PlayerDisconnectEvent event) {
         if (messageUtils != null) {
             messageUtils.clearPlayerData(event.getPlayer().getUniqueId());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onChat(ChatEvent event) {
+        // 只处理玩家发送的消息（不处理控制台等）
+        if (!(event.getSender() instanceof Player)) return;
+
+        // 判断是否为命令（以 / 开头）
+        if (!event.isCommand()) return;
+
+        Player player = (Player) event.getSender();
+        String fullCommand = event.getMessage(); // 完整命令，如 "/msg Trystage4C01 hello"
+
+        // 调用你的检查逻辑
+        String result = messageUtils.checkMessage(player.getUniqueId(), player.getName(), fullCommand);
+
+        if (result != null) {
+            event.setCancelled(true); // 取消命令执行
+            player.sendMessage(Component.text(result.replace('&', '§')).content());
         }
     }
 

@@ -70,6 +70,7 @@ public class ConfigManager {
 
         // 通用设置
         map.put("cooldown-seconds", 3);
+        map.put("checked-commands", Arrays.asList("msg", "tell", "whisper", "me", "say", "hh", "shout"));
 
         // ---- 广告词列表 ----
         map.put("advert-words", Arrays.asList(".", ",", "，", "。"));
@@ -240,5 +241,30 @@ public class ConfigManager {
             result.add(new SensitiveEntry(type, words, reason));
         }
         return result;
+    }
+
+    public List<String> getCheckedCommands() {
+        Object obj = config.get("checked-commands");
+        if (obj instanceof List) {
+            List<String> result = new ArrayList<>();
+            for (Object o : (List<?>) obj) {
+                if (o instanceof String) {
+                    result.add(((String) o).toLowerCase());
+                }
+            }
+            return result;
+        }
+        // 默认空列表 = 检查所有命令
+        return Collections.emptyList();
+    }
+
+    /**
+     * 判断某个命令是否应该被检查
+     * @param command 命令名（不含 /），如 "msg"
+     */
+    public boolean shouldCheckCommand(String command) {
+        List<String> checked = getCheckedCommands();
+        if (checked.isEmpty()) return true; // 空列表 = 全部检查
+        return checked.contains(command.toLowerCase());
     }
 }

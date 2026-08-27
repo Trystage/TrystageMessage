@@ -4,7 +4,9 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
+import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
@@ -78,7 +80,7 @@ public class TrystageMessageVelocity {
     /**
      * 监听玩家发送的聊天消息（非命令）
      */
-    @Subscribe
+    @Subscribe(order = PostOrder.FIRST)
     public void onPlayerChat(PlayerChatEvent event) {
         String playerName = event.getPlayer().getUsername();
         String message = event.getMessage();
@@ -95,6 +97,33 @@ public class TrystageMessageVelocity {
             event.setResult(PlayerChatEvent.ChatResult.denied());
             event.getPlayer().sendMessage(Component.text(result.replace('&', '§')));
             logger.info("Blocked message from {}: {}", playerName, message);
+        }
+    }
+    @Subscribe(order = PostOrder.FIRST)
+    public void onPlayerCommand(CommandExecuteEvent event) {
+        if (!(event.getCommandSource() instanceof Player)) return;
+        Player player = (Player) event.getCommandSource();
+
+
+        String fullCommand = event.getCommand();
+
+        String result = messageUtils.checkMessage(
+                player.getUniqueId(),
+                player.getUsername(),
+                fullCommand
+        );
+
+        String commandName = fullCommand.split(" ")[0].substring(1); // 去掉 "/"
+
+        // 检查是否应该拦截该命令（利用你已有的 shouldCheckCommand）
+        if (!configManager.shouldCheckCommand(commandName)) {
+            return;
+        }
+
+        if (result != null) {
+            event.setResult(CommandExecuteEvent.CommandResult.denied());
+            player.sendMessage(Component.text(result.replace('&', '§')));
+            logger.info("Blocked command from {}: {}", player.getUsername(), fullCommand);
         }
     }
 
