@@ -23,7 +23,7 @@ import java.util.Optional;
 @Plugin(
         id = "trystagemessage",
         name = "TrystageMessageVelocity",
-        version = "1.1",
+        version = "1.2",
         description = "Spamming, advertising blocker",
         url = "www.trystage.win",
         authors = {"TrystageBedwars"}
