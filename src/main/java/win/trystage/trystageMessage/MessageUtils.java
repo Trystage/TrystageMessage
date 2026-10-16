@@ -18,7 +18,7 @@ public class MessageUtils {
     private final Map<UUID, String> lastMessageContent = new ConcurrentHashMap<>();
 
     // 重复检测窗口（毫秒）
-    private static final long REPEAT_WINDOW_MS = 60 * 1000L;
+    private static final long REPEAT_WINDOW_MS = 30 * 1000L;
 
     // 相似度阈值：最大长度 -> 最低相似度
     // 5 字 -> 0.8，10 字 -> 0.5，线性插值，两端限幅
